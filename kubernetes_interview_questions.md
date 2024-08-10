@@ -85,7 +85,8 @@
     Answer: Ingress Controller FULFILLS ingress requirements
             Defining and ingress has no actual impact on traffic.
             Traffic is only acted upon once you have created an Ingress Controller (e.g. Load Balancer or Nginx Ingress Controller)
-
+            Ingress: Defines the rules for routing external traffic to services within the cluster.
+	    Ingress Controller: Implements those rules and manages the actual routing of traffic based on the Ingress resources.
 ## .
 
 
@@ -188,6 +189,42 @@
 
     Answer: Answer will depend on your use case. One possible answer is to have Service accounts that do certain things within the cluster.
             By the way, RBAC in Kubernetes is just AWS IAM Policies and Bindings. In RBAC, you have subjects (who gets the permission), verbs (what can the subject actually do), and rolebinding (subject linking to roles) and roles.
+Role based access control ,  
+Key concepts : Role , ClusterRole,  Rolebinding , ClusterRoleBinding
+Role: defines a set of permissions to namespace , 
+Clusterrole: defines a set of permissions to cluster-wide.
+RoleBinding: Granting the permissions in a role to a user
+ClusterBinding: Grants the permissions defined in a ClusterRole
+
+sample Role: 
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: dev-team
+  name: pod-reader
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+This Role allows read access to Pods within the dev-team namespace.
+
+RoleBinding: 
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-pods
+  namespace: dev-team
+subjects:
+- kind: User
+  name: jane
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+This RoleBinding assigns the pod-reader Role to a user named jane.
 
 
 ## .
